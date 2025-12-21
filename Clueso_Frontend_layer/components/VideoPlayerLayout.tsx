@@ -7,6 +7,7 @@ import TranscriptPanel from './TranscriptPanel';
 import ExportButton from './ExportButton';
 import EventOverlay from './EventOverlay';
 import RecordingFeedback from './RecordingFeedback';
+import AISummary from './AISummary';
 
 interface VideoPlayerLayoutProps {
     audioData: AudioData | null;
@@ -376,11 +377,20 @@ export default function VideoPlayerLayout({
                             <RecordingFeedback sessionId={sessionId} />
                         </div>
                     ) : (
-                        <TranscriptPanel
-                            audioData={audioData}
-                            currentTime={currentTime}
-                            onSeek={handleSeek}
-                        />
+                        <div className="flex-1 flex flex-col overflow-hidden">
+                            <TranscriptPanel
+                                audioData={audioData}
+                                currentTime={currentTime}
+                                onSeek={handleSeek}
+                            />
+                            {/* AI Summary Section */}
+                            <div className="shrink-0 p-4 border-t border-[var(--color-border-primary)]">
+                                <AISummary 
+                                    sessionId={sessionId} 
+                                    transcript={audioData?.text}
+                                />
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

@@ -16308,3 +16308,417 @@
 2025-12-21 21:50:22 : info: [Frontend Service] Unregistered client disconnected: nA2RqX-GuwlNz01VAAAB
 2025-12-21 21:50:24 : info: [Frontend Service] Client connected: fziRp1EPP8PiM638AAAD
 2025-12-21 21:50:24 : info: [Frontend Service] Client fziRp1EPP8PiM638AAAD registered for session: session_1766333240591_cm6hbajwr
+2025-12-21 22:11:22 : info: [Deepgram] Client initialized
+2025-12-21 22:11:22 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 22:11:22 : info: Server started
+2025-12-21 22:11:22 : info: Socket.IO server ready for frontend connections
+2025-12-21 22:11:23 : info: [Frontend Service] Client connected: 0So45E8wv_HQNrUkAAAB
+2025-12-21 22:11:23 : info: [Frontend Service] Client 0So45E8wv_HQNrUkAAAB registered for session: session_1766333240591_cm6hbajwr
+2025-12-21 22:57:34 : info: [Insights API] POST generate insight for recording: test-recording-123
+2025-12-21 22:57:34 : info: [Supabase] Client initialized
+2025-12-21 22:57:34 : error: [Insights] Error fetching insight: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:57:34 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 22:57:34 : error: [Insights] Error saving insight: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:57:34 : error: [Insights API] POST error: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:57:37 : info: [Insights API] POST generate insight for recording: test-recording-123
+2025-12-21 22:57:37 : error: [Insights] Error fetching insight: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:57:37 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 22:57:38 : error: [Insights] Error saving insight: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:57:38 : error: [Insights API] POST error: invalid input syntax for type uuid: "test-recording-123"
+2025-12-21 22:58:23 : info: [Deepgram] Client initialized
+2025-12-21 22:58:23 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 22:58:23 : info: Server started
+2025-12-21 22:58:23 : info: Socket.IO server ready for frontend connections
+2025-12-21 22:58:24 : info: [Frontend Service] Client connected: LgBV0_UnkssNeZrDAAAB
+2025-12-21 22:59:07 : info: [Deepgram] Client initialized
+2025-12-21 22:59:07 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 22:59:07 : info: Server started
+2025-12-21 22:59:07 : info: Socket.IO server ready for frontend connections
+2025-12-21 22:59:08 : info: [Frontend Service] Client connected: _WEVaaA3mfZ7rRI9AAAB
+2025-12-21 23:01:23 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:01:23 : info: [Supabase] Client initialized
+2025-12-21 23:01:24 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:01:24 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:02:50 : info: [Deepgram] Client initialized
+2025-12-21 23:02:50 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:02:50 : info: Server started
+2025-12-21 23:02:50 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:02:50 : info: [Frontend Service] Client connected: Fmqh9XRhYOHUxJtKAAAB
+2025-12-21 23:04:12 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:04:12 : info: [Supabase] Client initialized
+2025-12-21 23:04:12 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:04:12 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:05:28 : info: [Deepgram] Client initialized
+2025-12-21 23:05:28 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:05:28 : info: Server started
+2025-12-21 23:05:28 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:05:29 : info: [Frontend Service] Client connected: JpJlClvSoAYAemvmAAAB
+2025-12-21 23:05:50 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:05:50 : info: [Supabase] Client initialized
+2025-12-21 23:05:50 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:05:50 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:06:07 : info: [Deepgram] Client initialized
+2025-12-21 23:06:07 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:06:07 : info: Server started
+2025-12-21 23:06:07 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:06:08 : info: [Frontend Service] Client connected: f83u8EAsOYCNeprKAAAB
+2025-12-21 23:06:28 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:06:28 : info: [Supabase] Client initialized
+2025-12-21 23:06:29 : info: [Insights API] Returning existing insight for: test-recording-123
+2025-12-21 23:06:30 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:06:30 : info: [Insights API] Returning existing insight for: test-recording-123
+2025-12-21 23:07:01 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:07:01 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:07:01 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:07:54 : info: [Deepgram] Client initialized
+2025-12-21 23:07:54 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:07:54 : info: Server started
+2025-12-21 23:07:54 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:07:55 : info: [Frontend Service] Client connected: INsdHjmAlXIFxKL_AAAB
+2025-12-21 23:08:14 : info: [Deepgram] Client initialized
+2025-12-21 23:08:14 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:08:14 : info: Server started
+2025-12-21 23:08:14 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:08:15 : info: [Frontend Service] Client connected: 4iLPK229p_2jRBZ_AAAB
+2025-12-21 23:08:36 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:08:36 : info: [Supabase] Client initialized
+2025-12-21 23:08:36 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:08:36 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:09:04 : info: [Deepgram] Client initialized
+2025-12-21 23:09:04 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:09:04 : info: Server started
+2025-12-21 23:09:04 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:09:05 : info: [Frontend Service] Client connected: ggyVlolFbyyz4iq3AAAB
+2025-12-21 23:10:09 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:10:09 : info: [Supabase] Client initialized
+2025-12-21 23:10:09 : info: [Insights] GEMINI_API_KEY check: NOT FOUND
+2025-12-21 23:10:09 : warn: [Insights] No GEMINI_API_KEY configured, using mock summary
+2025-12-21 23:10:09 : info: [Insights] Insight saved for session: test-recording-123
+2025-12-21 23:10:23 : info: [Deepgram] Client initialized
+2025-12-21 23:10:24 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:10:24 : info: Server started
+2025-12-21 23:10:24 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:10:25 : info: [Frontend Service] Client connected: fmsjda460tPEhRU2AAAB
+2025-12-21 23:11:10 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:11:10 : info: [Supabase] Client initialized
+2025-12-21 23:11:10 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:11:10 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:11:10 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:11:10 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:11:10 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:11:39 : info: [Deepgram] Client initialized
+2025-12-21 23:11:39 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:11:39 : info: Server started
+2025-12-21 23:11:39 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:11:40 : info: [Frontend Service] Client connected: 6qH6FI1rd33n1IxlAAAB
+2025-12-21 23:11:51 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:11:51 : info: [Supabase] Client initialized
+2025-12-21 23:11:51 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:11:51 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:11:51 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:11:51 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:11:51 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:11:52 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:11:52 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:11:52 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:11:52 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:11:52 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:11:52 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:12:02 : info: [Deepgram] Client initialized
+2025-12-21 23:12:02 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:12:02 : info: Server started
+2025-12-21 23:12:02 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:12:03 : info: [Frontend Service] Client connected: PE2M1PsBEsduLVkiAAAB
+2025-12-21 23:12:09 : info: [Deepgram] Client initialized
+2025-12-21 23:12:09 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:12:09 : info: Server started
+2025-12-21 23:12:09 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:12:10 : info: [Frontend Service] Client connected: u4IsFXX-D-10QMYsAAAB
+2025-12-21 23:12:15 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:12:15 : info: [Supabase] Client initialized
+2025-12-21 23:12:16 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:12:16 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:12:16 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:12:16 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:12:16 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:13:03 : info: [Deepgram] Client initialized
+2025-12-21 23:13:03 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:13:03 : info: Server started
+2025-12-21 23:13:03 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:13:04 : info: [Frontend Service] Client connected: KaAL3JWNfK5IVZPxAAAB
+2025-12-21 23:13:18 : info: [Deepgram] Client initialized
+2025-12-21 23:13:18 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:13:18 : info: Server started
+2025-12-21 23:13:18 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:13:19 : info: [Frontend Service] Client connected: ul-u4eEna9vISbGIAAAB
+2025-12-21 23:13:27 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:13:27 : info: [Supabase] Client initialized
+2025-12-21 23:13:28 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:13:28 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:13:28 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:13:28 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:13:28 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:15:19 : info: [Deepgram] Client initialized
+2025-12-21 23:15:19 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:15:19 : info: Server started
+2025-12-21 23:15:19 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:15:20 : info: [Frontend Service] Client connected: qyeGFlduZ23U_GN1AAAB
+2025-12-21 23:15:53 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:15:54 : info: [Supabase] Client initialized
+2025-12-21 23:15:54 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:15:54 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:15:54 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:15:54 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:15:54 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:16:23 : info: [Deepgram] Client initialized
+2025-12-21 23:16:23 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:16:23 : info: Server started
+2025-12-21 23:16:23 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:16:24 : info: [Frontend Service] Client connected: 8mA9CzSMRASn5RrNAAAB
+2025-12-21 23:16:53 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:16:53 : info: [Supabase] Client initialized
+2025-12-21 23:16:53 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:16:53 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:16:53 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:16:53 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:16:53 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:18:10 : info: [Deepgram] Client initialized
+2025-12-21 23:18:10 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:18:10 : info: Server started
+2025-12-21 23:18:10 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:18:11 : info: [Frontend Service] Client connected: NwcbSnOkWGUyuyqWAAAB
+2025-12-21 23:18:16 : info: [Deepgram] Client initialized
+2025-12-21 23:18:16 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:18:16 : info: Server started
+2025-12-21 23:18:16 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:18:17 : info: [Frontend Service] Client connected: sraxr2Wt40IG1tnTAAAB
+2025-12-21 23:18:31 : info: [Deepgram] Client initialized
+2025-12-21 23:18:31 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:18:31 : info: Server started
+2025-12-21 23:18:31 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:18:32 : info: [Frontend Service] Client connected: _sBMVRGHu8ljwZkmAAAB
+2025-12-21 23:18:40 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:18:40 : info: [Supabase] Client initialized
+2025-12-21 23:18:40 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:18:40 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:18:41 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:18:41 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:18:41 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:20:34 : info: [Deepgram] Client initialized
+2025-12-21 23:20:35 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:20:35 : info: Server started
+2025-12-21 23:20:35 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:20:36 : info: [Frontend Service] Client connected: So9jV3VJcxcUWLJ_AAAB
+2025-12-21 23:20:41 : info: [Deepgram] Client initialized
+2025-12-21 23:20:41 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:20:41 : info: Server started
+2025-12-21 23:20:41 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:20:42 : info: [Frontend Service] Client connected: El3EhMMh7ePGk6HNAAAB
+2025-12-21 23:21:01 : info: [Deepgram] Client initialized
+2025-12-21 23:21:01 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:21:01 : info: Server started
+2025-12-21 23:21:01 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:21:01 : info: [Frontend Service] Client connected: fQWFIE9femJe89TDAAAB
+2025-12-21 23:21:12 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:21:12 : info: [Supabase] Client initialized
+2025-12-21 23:21:12 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:21:12 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:21:12 : info: [Insights] API URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDUTA...
+2025-12-21 23:21:12 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:21:12 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:21:12 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:21:42 : info: [Deepgram] Client initialized
+2025-12-21 23:21:42 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:21:42 : info: Server started
+2025-12-21 23:21:42 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:21:43 : info: [Frontend Service] Client connected: cp0IcImhd5Ctz_fZAAAB
+2025-12-21 23:22:00 : info: [Deepgram] Client initialized
+2025-12-21 23:22:00 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:22:00 : info: Server started
+2025-12-21 23:22:00 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:22:01 : info: [Deepgram] Client initialized
+2025-12-21 23:22:01 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:22:01 : info: Server started
+2025-12-21 23:22:01 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:22:01 : info: [Frontend Service] Client connected: 2BjgbBF5C1xFgT3eAAAB
+2025-12-21 23:22:07 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:22:07 : info: [Supabase] Client initialized
+2025-12-21 23:22:07 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:22:07 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:22:07 : info: [Insights] API URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDUTA...
+2025-12-21 23:22:07 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:22:07 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:22:07 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:22:30 : info: [Deepgram] Client initialized
+2025-12-21 23:22:30 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:22:30 : info: Server started
+2025-12-21 23:22:30 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:22:31 : info: [Frontend Service] Client connected: x4JlIkb0RKVofJumAAAB
+2025-12-21 23:24:51 : info: [Deepgram] Client initialized
+2025-12-21 23:24:51 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:24:51 : info: Server started
+2025-12-21 23:24:51 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:24:52 : info: [Frontend Service] Client connected: 5yJcx8JujVN6jJ0cAAAB
+2025-12-21 23:25:01 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:25:01 : info: [Supabase] Client initialized
+2025-12-21 23:25:01 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:25:01 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:25:01 : info: [Insights] API URL: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyCGMe...
+2025-12-21 23:25:01 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:25:01 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:25:01 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:25:51 : info: [Deepgram] Client initialized
+2025-12-21 23:25:51 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:25:51 : info: Server started
+2025-12-21 23:25:51 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:25:52 : info: [Frontend Service] Client connected: WPT042gpcG3rqO3lAAAB
+2025-12-21 23:26:06 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:26:06 : info: [Supabase] Client initialized
+2025-12-21 23:26:06 : info: [Insights] GEMINI_API_KEY check: Found (length: 39)
+2025-12-21 23:26:06 : info: [Insights] Using Gemini API for summary generation
+2025-12-21 23:26:06 : info: [Insights] API URL: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyBI7w...
+2025-12-21 23:26:07 : error: [Insights] Gemini API error: 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-12-21 23:26:07 : error: [Insights] AI generation failed: AI service error: 404
+2025-12-21 23:26:07 : error: [Insights API] POST error: AI service error: 404
+2025-12-21 23:26:54 : info: [Deepgram] Client initialized
+2025-12-21 23:26:54 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:26:54 : info: Server started
+2025-12-21 23:26:54 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:26:55 : info: [Frontend Service] Client connected: nfiivafKp1T0Q8_UAAAB
+2025-12-21 23:29:00 : info: [Deepgram] Client initialized
+2025-12-21 23:29:00 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:29:00 : info: Server started
+2025-12-21 23:29:00 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:29:01 : info: [Frontend Service] Client connected: 9zgRbpSSpNRAbXVjAAAB
+2025-12-21 23:29:09 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:29:09 : info: [Supabase] Client initialized
+2025-12-21 23:29:09 : info: [Insights] OPENAI_API_KEY check: Found (length: 164)
+2025-12-21 23:29:09 : info: [Insights] Using OpenAI API for summary generation
+2025-12-21 23:29:10 : error: [Insights] OpenAI API error: 429 - {
+    "error": {
+        "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.",
+        "type": "insufficient_quota",
+        "param": null,
+        "code": "insufficient_quota"
+    }
+}
+
+2025-12-21 23:29:10 : error: [Insights] AI generation failed: AI service error: 429
+2025-12-21 23:29:10 : error: [Insights API] POST error: AI service error: 429
+2025-12-21 23:32:13 : info: [Deepgram] Client initialized
+2025-12-21 23:32:13 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:32:13 : info: Server started
+2025-12-21 23:32:13 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:32:14 : info: [Frontend Service] Client connected: OwKvWsdvRt6SoNcMAAAB
+2025-12-21 23:32:28 : info: [Deepgram] Client initialized
+2025-12-21 23:32:28 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:32:28 : info: Server started
+2025-12-21 23:32:28 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:32:29 : info: [Frontend Service] Client connected: T1tF0cGJkteQXL3NAAAB
+2025-12-21 23:32:58 : info: [Deepgram] Client initialized
+2025-12-21 23:32:58 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:32:58 : info: Server started
+2025-12-21 23:32:58 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:32:58 : info: [Frontend Service] Client connected: Fu7n5xNjm6Ckn8avAAAB
+2025-12-21 23:33:07 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:33:07 : info: [Supabase] Client initialized
+2025-12-21 23:33:07 : info: [Insights] NVIDIA_API_KEY check: Found (length: 234)
+2025-12-21 23:33:07 : info: [Insights] Using NVIDIA AI for summary generation
+2025-12-21 23:33:07 : error: [Insights] NVIDIA API error: 403 - {"status":403,"title":"Forbidden","detail":"Authorization failed"}
+2025-12-21 23:33:07 : error: [Insights] AI generation failed: AI service error: 403
+2025-12-21 23:33:07 : error: [Insights API] POST error: AI service error: 403
+2025-12-21 23:34:05 : info: [Deepgram] Client initialized
+2025-12-21 23:34:05 : info: [Frontend Service] Socket.IO server initialized
+2025-12-21 23:34:05 : info: Server started
+2025-12-21 23:34:05 : info: Socket.IO server ready for frontend connections
+2025-12-21 23:34:06 : info: [Frontend Service] Client connected: KcxLFUJFMeULl27LAAAB
+2025-12-21 23:34:15 : info: [Insights API] POST generate insight for session: test-recording-123
+2025-12-21 23:34:15 : info: [Supabase] Client initialized
+2025-12-21 23:34:15 : info: [Insights] NVIDIA_API_KEY check: Found (length: 70)
+2025-12-21 23:34:15 : info: [Insights] Using NVIDIA AI for summary generation
+2025-12-21 23:34:16 : info: [Insights] Summary generated successfully
+2025-12-21 23:34:16 : info: [Insights] Insight saved for session: test-recording-123
