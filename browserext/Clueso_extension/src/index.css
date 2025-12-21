@@ -1,0 +1,15 @@
+/* src/styles.css */
+body { 
+  font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; 
+  margin: 0;
+  background-color: #0f0f14;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
