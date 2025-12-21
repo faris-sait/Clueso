@@ -76,6 +76,32 @@ CREATE POLICY "Users can delete own recordings" ON recordings
   FOR DELETE USING (true);
 
 -- =====================
+-- FEEDBACK TABLE
+-- =====================
+CREATE TABLE IF NOT EXISTS feedback (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  recording_id UUID NOT NULL REFERENCES recordings(id) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for feedback
+CREATE INDEX IF NOT EXISTS idx_feedback_recording_id ON feedback(recording_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_user_id ON feedback(user_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at DESC);
+
+-- Enable RLS for feedback
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+-- Feedback policies
+CREATE POLICY "Users can view feedback on recordings" ON feedback
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert own feedback" ON feedback
+  FOR INSERT WITH CHECK (true);
+
+-- =====================
 -- FUNCTIONS
 -- =====================
 

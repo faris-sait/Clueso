@@ -6,6 +6,7 @@ import Timeline from './Timeline';
 import TranscriptPanel from './TranscriptPanel';
 import ExportButton from './ExportButton';
 import EventOverlay from './EventOverlay';
+import RecordingFeedback from './RecordingFeedback';
 
 interface VideoPlayerLayoutProps {
     audioData: AudioData | null;
@@ -31,6 +32,7 @@ export default function VideoPlayerLayout({
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
+    const [showFeedback, setShowFeedback] = useState(false);
 
     // Trim 1 second from start and end
     const TRIM_START = 1;
@@ -223,8 +225,27 @@ export default function VideoPlayerLayout({
                     </div>
                 </div>
 
-                {/* Export Button */}
-                <ExportButton audioData={audioData} videoData={videoData} sessionId={sessionId} />
+                {/* Export Button + Feedback Button */}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowFeedback(!showFeedback)}
+                        className={`
+                            relative px-6 py-3 rounded-lg font-semibold
+                            flex items-center gap-2 transition-all duration-200
+                            shadow-lg hover:shadow-xl
+                            ${showFeedback 
+                                ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600' 
+                                : 'bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600'
+                            }
+                        `}
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span>{showFeedback ? 'Hide Feedback' : 'Feedback'}</span>
+                    </button>
+                    <ExportButton audioData={audioData} videoData={videoData} sessionId={sessionId} />
+                </div>
             </header>
 
             {/* Main Content */}
@@ -337,13 +358,30 @@ export default function VideoPlayerLayout({
                     />
                 </div>
 
-                {/* Transcript Panel */}
-                <div className="w-96 shrink-0">
-                    <TranscriptPanel
-                        audioData={audioData}
-                        currentTime={currentTime}
-                        onSeek={handleSeek}
-                    />
+                {/* Transcript Panel / Feedback Panel */}
+                <div className="w-96 shrink-0 flex flex-col overflow-hidden">
+                    {showFeedback ? (
+                        <div className="flex-1 overflow-y-auto p-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Recording Feedback</h2>
+                                <button
+                                    onClick={() => setShowFeedback(false)}
+                                    className="p-1 rounded hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-tertiary)]"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <RecordingFeedback sessionId={sessionId} />
+                        </div>
+                    ) : (
+                        <TranscriptPanel
+                            audioData={audioData}
+                            currentTime={currentTime}
+                            onSeek={handleSeek}
+                        />
+                    )}
                 </div>
             </div>
         </div>

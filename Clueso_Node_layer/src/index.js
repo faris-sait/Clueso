@@ -8,6 +8,7 @@ const recordingRoutes = require('./routes/v1/recording-routes');
 const pythonRoutes = require('./routes/v1/python-routes'); // Add python routes
 const authRoutes = require('./routes/v1/auth-routes'); // Add auth routes
 const userRoutes = require('./routes/v1/user-routes'); // Add user routes
+const feedbackRoutes = require('./routes/v1/feedback-routes'); // Add feedback routes
 const { FrontendService } = require('./services');
 
 const app = express();
@@ -60,15 +61,18 @@ app.use('/api/recording', recordingRoutes);
 // Python AI processing routes
 app.use('/api/python', pythonRoutes);
 
-// Authentication routes
-app.use('/api/v1/auth', authRoutes);
-
-// User routes
-app.use('/api/v1/users', userRoutes);
-
 // Normal JSON and URL encoded parsers for other APIs
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Authentication routes (need body parser)
+app.use('/api/v1/auth', authRoutes);
+
+// User routes (need body parser)
+app.use('/api/v1/users', userRoutes);
+
+// Feedback routes (need body parser)
+app.use('/api/v1/feedback', feedbackRoutes);
 
 // All other API routes
 app.use('/api', apiRoutes);

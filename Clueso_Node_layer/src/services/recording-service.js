@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { Logger } = require("../config");
 const supabaseService = require("./supabase-service");
+const RealtimeAudioService = require("./realtime-audio-service");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 const recordingsDir = path.join(__dirname, "..", "recordings");
@@ -12,6 +13,9 @@ if (!fs.existsSync(recordingsDir)) fs.mkdirSync(recordingsDir, { recursive: true
 
 // CHANGED: Per-session file streams
 const activeStreams = new Map(); // sessionId -> { videoFile, audioFile, videoBytesWritten, audioBytesWritten }
+
+// Feature flag for real-time processing
+const ENABLE_REALTIME_PROCESSING = process.env.ENABLE_REALTIME_PROCESSING === 'true';
 
 const getOrCreateStream = (sessionId, type) => {
   if (!activeStreams.has(sessionId)) {
@@ -23,7 +27,8 @@ const getOrCreateStream = (sessionId, type) => {
       videoBytesWritten: 0,
       audioBytesWritten: 0,
       videoChunks: [],  // Track chunk order
-      audioChunks: []
+      audioChunks: [],
+      realtimeInitialized: false,
     });
   }
 
@@ -41,6 +46,16 @@ const getOrCreateStream = (sessionId, type) => {
     session.audioFilePath = path.join(uploadDir, filename);
     session.audioFile = fs.createWriteStream(session.audioFilePath);
     Logger.info(`[SERVICE] Created audio stream for session: ${sessionId}`);
+    
+    // Initialize real-time processing for audio
+    if (ENABLE_REALTIME_PROCESSING && !session.realtimeInitialized) {
+      RealtimeAudioService.initSession(sessionId).then(() => {
+        session.realtimeInitialized = true;
+        Logger.info(`[SERVICE] Real-time processing initialized for session: ${sessionId}`);
+      }).catch(err => {
+        Logger.error(`[SERVICE] Failed to init real-time processing:`, err);
+      });
+    }
   }
 
   return session;
@@ -66,6 +81,13 @@ exports.saveChunk = async ({ sessionId, type, chunk, sequence, requestId }) => {
       // Store chunk info for ordering verification
       const chunks = type === "video" ? session.videoChunks : session.audioChunks;
       chunks.push({ sequence, size: chunk.length, timestamp: Date.now() });
+
+      // Send audio chunks to real-time processing (non-blocking)
+      if (type === "audio" && ENABLE_REALTIME_PROCESSING && session.realtimeInitialized) {
+        RealtimeAudioService.processAudioChunk(sessionId, chunk).catch(err => {
+          Logger.warn(`[SERVICE] Real-time audio processing error (non-fatal):`, err.message);
+        });
+      }
 
       stream.write(chunk, (err) => {
         if (err) {
@@ -316,3 +338,39 @@ exports.processRecording = async ({ events, metadata, videoPath, audioPath }) =>
     throw err;
   }
 };
+
+/**
+ * Finalize real-time processing and get streamed audio
+ * Call this after processRecording to get the pre-generated TTS audio
+ */
+exports.finalizeRealtimeProcessing = async (sessionId) => {
+  if (!ENABLE_REALTIME_PROCESSING) {
+    return null;
+  }
+
+  try {
+    Logger.info(`[SERVICE] Finalizing real-time processing for session: ${sessionId}`);
+    const result = await RealtimeAudioService.finalizeSession(sessionId);
+    
+    if (result && result.audio) {
+      Logger.info(`[SERVICE] Real-time audio ready: ${result.audio.filename}`);
+      return {
+        audioPath: result.audio.path,
+        audioFilename: result.audio.filename,
+        transcription: result.transcription?.fullText || '',
+        sentences: result.transcription?.sentences || [],
+        segmentCount: result.audio.segmentCount,
+      };
+    }
+    
+    return null;
+  } catch (err) {
+    Logger.error(`[SERVICE] Error finalizing real-time processing:`, err);
+    return null;
+  }
+};
+
+/**
+ * Check if real-time processing is enabled
+ */
+exports.isRealtimeEnabled = () => ENABLE_REALTIME_PROCESSING;
