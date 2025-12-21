@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { authenticateUser } = require('../../middleware/auth-middleware');
+const supabaseService = require('../../services/supabase-service');
 
 const recordingsDir = path.join(__dirname, '..', '..', 'recordings');
 
@@ -57,11 +58,41 @@ router.put('/profile', authenticateUser, async (req, res) => {
 
 /**
  * GET /api/v1/users/recordings
- * Get user's recording history
+ * Get user's recording history with signed URLs for playback
  */
 router.get('/recordings', authenticateUser, async (req, res) => {
   try {
-    // Read recordings from the recordings directory
+    // First try to get recordings from Supabase (with signed URLs)
+    if (req.user && req.user.id) {
+      const supabaseRecordings = await supabaseService.getUserRecordingsWithUrls(req.user.id);
+      
+      if (supabaseRecordings && supabaseRecordings.length > 0) {
+        const recordings = supabaseRecordings.map(r => ({
+          id: r.id,
+          sessionId: r.session_id,
+          title: r.title,
+          url: r.url || 'Unknown URL',
+          startTime: r.metadata?.startTime,
+          endTime: r.metadata?.endTime,
+          processedAt: r.created_at,
+          eventsCount: r.events_count || 0,
+          hasVideo: !!r.video_path,
+          hasAudio: !!r.audio_path,
+          videoUrl: r.videoUrl,  // Signed URL for video playback
+          audioUrl: r.audioUrl,  // Signed URL for audio playback
+          thumbnail: null,
+        }));
+
+        return res.json({
+          success: true,
+          recordings,
+          total: recordings.length,
+          source: 'supabase'
+        });
+      }
+    }
+
+    // Fallback: Read recordings from the local recordings directory
     const recordings = [];
     
     if (fs.existsSync(recordingsDir)) {
@@ -87,6 +118,8 @@ router.get('/recordings', authenticateUser, async (req, res) => {
             eventsCount: data.events?.length || 0,
             hasVideo: !!data.videoPath,
             hasAudio: !!data.audioPath,
+            videoUrl: null,  // Local files don't have signed URLs
+            audioUrl: null,
             thumbnail: null,
           });
         } catch (parseErr) {
@@ -101,7 +134,8 @@ router.get('/recordings', authenticateUser, async (req, res) => {
     res.json({
       success: true,
       recordings,
-      total: recordings.length
+      total: recordings.length,
+      source: 'local'
     });
   } catch (error) {
     console.error('Error fetching recordings:', error);

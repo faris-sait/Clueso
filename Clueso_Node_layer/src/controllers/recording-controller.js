@@ -135,9 +135,11 @@ exports.processRecording = async (req, res) => {
       audioPath,
     });
 
-    // Validated permanent audio path from service
-    const permanentAudioPath = result.audioPath;
+    // Validated permanent paths and signed URLs from service
     const permanentVideoPath = result.videoPath;
+    const permanentAudioPath = result.audioPath;
+    const videoSignedUrl = result.videoSignedUrl;
+    const audioSignedUrl = result.audioSignedUrl;
 
     // Use result.sessionId as it may have been corrected by fallback logic in service
     const actualSessionId = result.sessionId;
@@ -145,15 +147,29 @@ exports.processRecording = async (req, res) => {
     // 1. Broadcast video to frontend IMMEDIATELY (video doesn't need AI processing)
     // DEFENSIVE: Wrap in try-catch so broadcast errors don't block AI processing
     try {
-      if (permanentVideoPath) {
+      // Prefer signed URL from Supabase Storage, fallback to local path
+      if (videoSignedUrl || permanentVideoPath) {
         Logger.info(`[Recording Controller] Broadcasting video to frontend session: ${actualSessionId}`);
         const frontendService = require("../services/frontend-service");
-        frontendService.sendVideo(actualSessionId, {
-          filename: path.basename(permanentVideoPath),
-          path: `/recordings/${path.basename(permanentVideoPath)}`,
-          metadata: metadata,
-          timestamp: new Date().toISOString()
-        });
+        
+        if (videoSignedUrl) {
+          // Use Supabase signed URL directly
+          frontendService.sendVideo(actualSessionId, {
+            filename: `${metadata.sessionId}_video.webm`,
+            url: videoSignedUrl,  // Direct signed URL
+            path: null,  // No local path
+            metadata: metadata,
+            timestamp: new Date().toISOString()
+          });
+        } else {
+          // Fallback to local path
+          frontendService.sendVideo(actualSessionId, {
+            filename: path.basename(permanentVideoPath),
+            path: `/recordings/${path.basename(permanentVideoPath)}`,
+            metadata: metadata,
+            timestamp: new Date().toISOString()
+          });
+        }
       }
     } catch (broadcastError) {
       // Don't let broadcast errors block AI processing
@@ -181,13 +197,18 @@ exports.processRecording = async (req, res) => {
     // 3. Process with AI (if transcription succeeded)
     let pythonResponse = null;
     if (transcriptionResult && transcriptionResult.text) {
+      // Get userId for Supabase storage path
+      const userId = result.storageVideoPath ? result.storageVideoPath.split('/')[0] : null;
+      
       pythonResponse = await pythonController.processWithAI(
         transcriptionResult.text,
         events,
         metadata,
         transcriptionResult.deepgramResponse, // Full Deepgram JSON
         actualSessionId,
-        permanentAudioPath // Raw audio path
+        permanentAudioPath, // Raw audio path (for local fallback)
+        audioSignedUrl,     // Supabase signed URL for raw audio
+        userId              // User ID for uploading processed audio
       );
 
       // If Python processing failed, trigger fallback to DOM events
@@ -219,6 +240,19 @@ exports.processRecording = async (req, res) => {
         pythonResponse: pythonResponse,
         deepgramResponse: transcriptionResult.deepgramResponse
       };
+    }
+
+    // Clean up local audio file after transcription (if it was uploaded to Supabase)
+    if (permanentAudioPath && result.storageAudioPath) {
+      try {
+        const fs = require('fs');
+        if (fs.existsSync(permanentAudioPath)) {
+          fs.unlinkSync(permanentAudioPath);
+          Logger.info(`[Recording Controller] Local audio file deleted after transcription: ${permanentAudioPath}`);
+        }
+      } catch (cleanupErr) {
+        Logger.error(`[Recording Controller] Error deleting local audio file:`, cleanupErr);
+      }
     }
 
     return res.status(200).json(result);

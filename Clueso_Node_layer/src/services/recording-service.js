@@ -228,13 +228,49 @@ exports.processRecording = async ({ events, metadata, videoPath, audioPath }) =>
         }
 
         if (userId) {
+          // Upload files to Supabase Storage
+          let storageVideoPath = null;
+          let storageAudioPath = null;
+          let videoSignedUrl = null;
+          let audioSignedUrl = null;
+          
+          // Keep track of original paths for transcription (before deletion)
+          const originalVideoPath = permanentVideoPath;
+          const originalAudioPath = permanentAudioPath;
+
+          if (permanentVideoPath && fs.existsSync(permanentVideoPath)) {
+            const videoFileName = `${userId}/${metadata.sessionId}_video.webm`;
+            storageVideoPath = await supabaseService.uploadToStorage(permanentVideoPath, videoFileName);
+            if (storageVideoPath) {
+              Logger.info(`[SERVICE] Video uploaded to Supabase Storage: ${storageVideoPath}`);
+              // Generate signed URL for immediate use
+              videoSignedUrl = await supabaseService.getSignedUrl(storageVideoPath);
+              // Delete local file after successful upload
+              fs.unlinkSync(permanentVideoPath);
+              Logger.info(`[SERVICE] Local video file deleted: ${permanentVideoPath}`);
+            }
+          }
+
+          if (permanentAudioPath && fs.existsSync(permanentAudioPath)) {
+            const audioFileName = `${userId}/${metadata.sessionId}_audio.webm`;
+            storageAudioPath = await supabaseService.uploadToStorage(permanentAudioPath, audioFileName);
+            if (storageAudioPath) {
+              Logger.info(`[SERVICE] Audio uploaded to Supabase Storage: ${storageAudioPath}`);
+              // Generate signed URL for immediate use
+              audioSignedUrl = await supabaseService.getSignedUrl(storageAudioPath);
+              // NOTE: Don't delete audio file yet - controller needs it for transcription
+              // The controller will delete it after transcription
+              Logger.info(`[SERVICE] Audio file kept for transcription: ${permanentAudioPath}`);
+            }
+          }
+
           await supabaseService.createRecording({
             userId,
             sessionId: metadata.sessionId,
             title: metadata.title || `Recording ${metadata.sessionId.split('_').pop()}`,
             url: metadata.url,
-            videoPath: permanentVideoPath,
-            audioPath: permanentAudioPath,
+            videoPath: storageVideoPath,  // Now stores Supabase storage path
+            audioPath: storageAudioPath,  // Now stores Supabase storage path
             eventsCount: events.length,
             metadata: {
               startTime: metadata.startTime,
@@ -243,6 +279,22 @@ exports.processRecording = async ({ events, metadata, videoPath, audioPath }) =>
             },
           });
           Logger.info(`[SERVICE] Recording saved to Supabase for user: ${userId}`);
+
+          // Return with signed URLs for immediate frontend use
+          // Keep audioPath for transcription in controller
+          return {
+            success: true,
+            sessionId: metadata.sessionId,
+            filename,
+            eventsProcessed: events.length,
+            message: "Recording saved successfully",
+            audioPath: originalAudioPath,  // Keep original path for transcription
+            videoPath: null,  // Video is deleted, use signed URL
+            videoSignedUrl,
+            audioSignedUrl,
+            storageVideoPath,
+            storageAudioPath,
+          };
         }
       } catch (supabaseErr) {
         Logger.error('[SERVICE] Error saving to Supabase:', supabaseErr);
