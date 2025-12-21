@@ -126,15 +126,17 @@ export const useWebSocketConnection = (sessionId: string | null) => {
         });
 
         // 2. Video event - CRITICAL: This receives the screen recording
-        socket.on('video', (data: { filename: string; path: string; metadata: any; timestamp: string }) => {
+        socket.on('video', (data: { filename: string; path?: string; url?: string; metadata: any; timestamp: string }) => {
             console.log('[Hook] 🎥 VIDEO EVENT RECEIVED:');
             console.log('[Hook] - Filename:', data.filename);
             console.log('[Hook] - Path:', data.path);
-            console.log('[Hook] - Full URL:', `${BACKEND_URL}${data.path}`);
+            console.log('[Hook] - URL:', data.url);
             console.log('[Hook] - Metadata:', data.metadata);
             console.log('[Hook] - Timestamp:', data.timestamp);
             
-            const videoUrl = `${BACKEND_URL}${data.path}`;
+            // Use direct URL if provided (Supabase signed URL), otherwise construct from path
+            const videoUrl = data.url || `${BACKEND_URL}${data.path}`;
+            console.log('[Hook] - Final URL:', videoUrl);
             
             // Verify video URL is accessible
             fetch(videoUrl, { method: 'HEAD' })
@@ -158,15 +160,17 @@ export const useWebSocketConnection = (sessionId: string | null) => {
         });
 
         // 3. Audio event - Initial audio file
-        socket.on('audio', (data: { filename: string; path: string; text: string; timestamp: string }) => {
+        socket.on('audio', (data: { filename: string; path?: string; url?: string; text: string; timestamp: string }) => {
             console.log('[Hook] 🔊 AUDIO EVENT RECEIVED:');
             console.log('[Hook] - Filename:', data.filename);
             console.log('[Hook] - Path:', data.path);
-            console.log('[Hook] - Full URL:', `${BACKEND_URL}${data.path}`);
+            console.log('[Hook] - URL:', data.url);
             console.log('[Hook] - Text:', data.text);
             console.log('[Hook] - Timestamp:', data.timestamp);
             
-            const audioUrl = `${BACKEND_URL}${data.path}`;
+            // Use direct URL if provided (Supabase signed URL), otherwise construct from path
+            const audioUrl = data.url || `${BACKEND_URL}${data.path}`;
+            console.log('[Hook] - Final URL:', audioUrl);
             
             // Verify audio URL is accessible
             fetch(audioUrl, { method: 'HEAD' })

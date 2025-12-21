@@ -3,6 +3,7 @@ const PythonService = require("../services/python-service");
 const { Logger } = require("../config");
 const path = require("path");
 const fs = require("fs");
+const supabaseService = require("../services/supabase-service");
 
 /**
  * Process text with AI (Python service)
@@ -14,9 +15,11 @@ const fs = require("fs");
  * @param {object} deepgramResponse - Full Deepgram JSON response (optional)
  * @param {string} sessionId - Session ID for broadcasting
  * @param {string} audioPath - Path to raw audio file (optional)
+ * @param {string} audioSignedUrl - Supabase signed URL for raw audio (optional)
+ * @param {string} userId - User ID for Supabase storage path (optional)
  * @returns {Promise<object|null>} Python response or null if failed
  */
-exports.processWithAI = async (text, events = [], metadata = {}, deepgramResponse = null, sessionId = null, audioPath = null) => {
+exports.processWithAI = async (text, events = [], metadata = {}, deepgramResponse = null, sessionId = null, audioPath = null, audioSignedUrl = null, userId = null) => {
     try {
         if (!text || text.trim().length === 0) {
             Logger.warn(`[Python Controller] Text is empty, skipping AI processing`);
@@ -79,17 +82,45 @@ exports.processWithAI = async (text, events = [], metadata = {}, deepgramRespons
                 // Verify the processed audio file exists
                 if (fs.existsSync(processedAudioPath)) {
                     Logger.info(`[Python Controller] Found processed audio, broadcasting to frontend session: ${sessionId}`);
+                    
+                    // Try to upload processed audio to Supabase if userId is available
+                    let processedAudioUrl = null;
+                    if (userId) {
+                        try {
+                            const storagePath = `${userId}/${pythonResponse.processed_audio_filename}`;
+                            const uploadedPath = await supabaseService.uploadToStorage(processedAudioPath, storagePath);
+                            if (uploadedPath) {
+                                processedAudioUrl = await supabaseService.getSignedUrl(uploadedPath);
+                                Logger.info(`[Python Controller] Processed audio uploaded to Supabase: ${storagePath}`);
+                                // Delete local file after upload
+                                fs.unlinkSync(processedAudioPath);
+                            }
+                        } catch (uploadErr) {
+                            Logger.error(`[Python Controller] Failed to upload processed audio to Supabase:`, uploadErr);
+                        }
+                    }
+                    
                     frontendService.sendAudio(sessionId, {
                         filename: pythonResponse.processed_audio_filename,
-                        path: `/recordings/${pythonResponse.processed_audio_filename}`,
+                        url: processedAudioUrl,  // Supabase signed URL (may be null)
+                        path: processedAudioUrl ? null : `/recordings/${pythonResponse.processed_audio_filename}`,
                         text: pythonResponse.script || text, // Use generated script if available
                         timestamp: new Date().toISOString()
                     });
                 } else {
                     Logger.warn(`[Python Controller] Processed audio file not found at ${processedAudioPath}`);
-                    // Fall back to raw audio
-                    if (audioPath && fs.existsSync(audioPath)) {
-                        Logger.info(`[Python Controller] Using raw audio as fallback: ${audioPath}`);
+                    // Fall back to raw audio signed URL
+                    if (audioSignedUrl) {
+                        Logger.info(`[Python Controller] Using raw audio signed URL as fallback`);
+                        frontendService.sendAudio(sessionId, {
+                            filename: audioPath ? path.basename(audioPath) : 'audio.webm',
+                            url: audioSignedUrl,
+                            path: null,
+                            text: pythonResponse.script || text,
+                            timestamp: new Date().toISOString()
+                        });
+                    } else if (audioPath && fs.existsSync(audioPath)) {
+                        Logger.info(`[Python Controller] Using raw audio local path as fallback: ${audioPath}`);
                         frontendService.sendAudio(sessionId, {
                             filename: path.basename(audioPath),
                             path: `/recordings/${path.basename(audioPath)}`,
@@ -99,9 +130,17 @@ exports.processWithAI = async (text, events = [], metadata = {}, deepgramRespons
                     }
                 }
             } else if (pythonResponse && pythonResponse.audio_generation_failed) {
-                // Audio generation failed in Python, use raw audio
+                // Audio generation failed in Python, use raw audio signed URL
                 Logger.warn(`[Python Controller] Audio generation failed in Python, using raw audio`);
-                if (audioPath && fs.existsSync(audioPath)) {
+                if (audioSignedUrl) {
+                    frontendService.sendAudio(sessionId, {
+                        filename: audioPath ? path.basename(audioPath) : 'audio.webm',
+                        url: audioSignedUrl,
+                        path: null,
+                        text: pythonResponse.script || text,
+                        timestamp: new Date().toISOString()
+                    });
+                } else if (audioPath && fs.existsSync(audioPath)) {
                     frontendService.sendAudio(sessionId, {
                         filename: path.basename(audioPath),
                         path: `/recordings/${path.basename(audioPath)}`,
@@ -127,8 +166,18 @@ exports.processWithAI = async (text, events = [], metadata = {}, deepgramRespons
             });
 
             // IMPORTANT: Send raw audio as fallback when Python fails
-            if (audioPath && fs.existsSync(audioPath)) {
-                Logger.info(`[Python Controller] Python failed, sending raw audio as fallback: ${audioPath}`);
+            // Prefer signed URL over local path
+            if (audioSignedUrl) {
+                Logger.info(`[Python Controller] Python failed, sending raw audio signed URL as fallback`);
+                frontendService.sendAudio(sessionId, {
+                    filename: audioPath ? path.basename(audioPath) : 'audio.webm',
+                    url: audioSignedUrl,
+                    path: null,
+                    text: text, // Use original transcription
+                    timestamp: new Date().toISOString()
+                });
+            } else if (audioPath && fs.existsSync(audioPath)) {
+                Logger.info(`[Python Controller] Python failed, sending raw audio local path as fallback: ${audioPath}`);
                 frontendService.sendAudio(sessionId, {
                     filename: path.basename(audioPath),
                     path: `/recordings/${path.basename(audioPath)}`,
