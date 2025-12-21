@@ -102,6 +102,33 @@ CREATE POLICY "Users can insert own feedback" ON feedback
   FOR INSERT WITH CHECK (true);
 
 -- =====================
+-- RECORDING INSIGHTS TABLE
+-- =====================
+-- Uses session_id (TEXT) for easier lookups
+CREATE TABLE IF NOT EXISTS recording_insights (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  session_id TEXT NOT NULL UNIQUE,
+  summary_text TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for fast lookups
+CREATE INDEX IF NOT EXISTS idx_recording_insights_session_id ON recording_insights(session_id);
+
+-- Enable RLS for insights
+ALTER TABLE recording_insights ENABLE ROW LEVEL SECURITY;
+
+-- Insights policies
+CREATE POLICY "Users can view insights" ON recording_insights
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert insights" ON recording_insights
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Users can update insights" ON recording_insights
+  FOR UPDATE USING (true);
+
+-- =====================
 -- FUNCTIONS
 -- =====================
 
