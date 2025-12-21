@@ -176,12 +176,54 @@ exports.processRecording = async (req, res) => {
       Logger.error(`[Recording Controller] Error broadcasting video to frontend (continuing with AI processing):`, broadcastError);
     }
 
-    // 2. Transcribe audio with Deepgram (if audio exists)
-    const transcriptionResult = await exports.transcribeAudio(
-      permanentAudioPath,
-      actualSessionId,
-      metadata
-    );
+    // 2. Check for real-time processing results first (if enabled)
+    let realtimeResult = null;
+    if (recordingService.isRealtimeEnabled()) {
+      Logger.info(`[Recording Controller] Checking for real-time processing results...`);
+      realtimeResult = await recordingService.finalizeRealtimeProcessing(actualSessionId);
+      
+      if (realtimeResult && realtimeResult.audioPath) {
+        Logger.info(`[Recording Controller] Real-time audio available: ${realtimeResult.audioFilename}`);
+        
+        // Send the pre-generated audio to frontend
+        const frontendService = require("../services/frontend-service");
+        frontendService.sendAudio(actualSessionId, {
+          filename: realtimeResult.audioFilename,
+          path: `/recordings/${realtimeResult.audioFilename}`,
+          text: realtimeResult.transcription,
+          timestamp: new Date().toISOString(),
+          isStreamed: true,
+        });
+        
+        // Send transcription as instructions
+        if (realtimeResult.sentences && realtimeResult.sentences.length > 0) {
+          realtimeResult.sentences.forEach((sentence, index) => {
+            frontendService.sendInstructions(actualSessionId, {
+              type: 'transcription',
+              text: sentence,
+              index: index,
+              timestamp: Date.now(),
+            });
+          });
+        }
+      }
+    }
+
+    // 3. Transcribe audio with Deepgram (if no real-time result and audio exists)
+    let transcriptionResult = null;
+    if (!realtimeResult) {
+      transcriptionResult = await exports.transcribeAudio(
+        permanentAudioPath,
+        actualSessionId,
+        metadata
+      );
+    } else {
+      // Use real-time transcription result
+      transcriptionResult = {
+        text: realtimeResult.transcription,
+        deepgramResponse: { text: realtimeResult.transcription, sentences: realtimeResult.sentences },
+      };
+    }
 
     // Store DOM events for fallback (in case Python processing fails)
     try {
@@ -194,9 +236,9 @@ exports.processRecording = async (req, res) => {
       Logger.error(`[Recording Controller] Error storing DOM events for fallback:`, storageError);
     }
 
-    // 3. Process with AI (if transcription succeeded)
+    // 4. Process with AI (if transcription succeeded and no real-time audio)
     let pythonResponse = null;
-    if (transcriptionResult && transcriptionResult.text) {
+    if (!realtimeResult && transcriptionResult && transcriptionResult.text) {
       // Get userId for Supabase storage path
       const userId = result.storageVideoPath ? result.storageVideoPath.split('/')[0] : null;
       
@@ -221,6 +263,9 @@ exports.processRecording = async (req, res) => {
           Logger.error(`[Recording Controller] Error triggering fallback:`, fallbackError);
         }
       }
+    } else if (realtimeResult) {
+      // Real-time processing succeeded, skip Python
+      Logger.info(`[Recording Controller] Using real-time audio, skipping Python processing`);
     } else {
       // No transcription, use DOM events as fallback
       Logger.warn(`[Recording Controller] No transcription available, triggering DOM events fallback`);

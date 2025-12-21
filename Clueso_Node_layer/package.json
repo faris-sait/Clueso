@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@clerk/backend": "^2.29.0",
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@deepgram/sdk": "^4.11.2",
     "@supabase/supabase-js": "^2.89.0",

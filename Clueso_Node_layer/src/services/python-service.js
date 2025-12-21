@@ -5,8 +5,9 @@ const { Logger } = require('../config');
 class PythonService {
   constructor() {
     this.pythonBaseUrl = process.env.PYTHON_LAYER_URL || 'http://localhost:8000';
-    // Increased timeout for TTS generation (can take 60+ seconds for longer scripts)
-    this.timeout = parseInt(process.env.PYTHON_SERVICE_TIMEOUT || '120000', 10);
+    // Increased timeout for TTS generation (can take 120+ seconds for longer scripts)
+    // Script generation (Gemini) + Audio generation (Deepgram TTS) can take significant time
+    this.timeout = parseInt(process.env.PYTHON_SERVICE_TIMEOUT || '180000', 10);
   }
 
   /**

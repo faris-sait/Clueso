@@ -1,4 +1,4 @@
-# elevenlabs_service.py — Deepgram TTS with retry logic
+# elevenlabs_service.py — Deepgram TTS with retry logic and chunking
 
 import os
 import re
@@ -19,11 +19,33 @@ DEEPGRAM_SPEAK_URL = "https://api.deepgram.com/v1/speak"
 # Retry configuration
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
+# Max characters per TTS request (Deepgram handles up to ~2000 chars well)
+MAX_CHUNK_SIZE = 1500
 
 
 def chunk_by_sentence(text: str) -> List[str]:
     sentences = re.split(r'(?<=[.!?])\s+', text.strip())
     return [s.strip() for s in sentences if s.strip()]
+
+
+def chunk_text_for_tts(text: str, max_size: int = MAX_CHUNK_SIZE) -> List[str]:
+    """Split text into chunks at sentence boundaries, respecting max size."""
+    sentences = chunk_by_sentence(text)
+    chunks = []
+    current_chunk = ""
+    
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) + 1 <= max_size:
+            current_chunk = f"{current_chunk} {sentence}".strip()
+        else:
+            if current_chunk:
+                chunks.append(current_chunk)
+            current_chunk = sentence
+    
+    if current_chunk:
+        chunks.append(current_chunk)
+    
+    return chunks if chunks else [text]
 
 
 def ensure_sentence_endings(text: str) -> str:
@@ -65,7 +87,7 @@ def call_deepgram(text: str, model: str) -> bytes:
         headers=headers, 
         params=params, 
         json={"text": text},
-        timeout=60
+        timeout=90
     )
     
     if not resp.ok:
@@ -74,19 +96,40 @@ def call_deepgram(text: str, model: str) -> bytes:
 
 
 def generate_voice_from_text(text: str, voice_id: str = DEFAULT_VOICE_MODEL) -> bytes:
-    """Generate voice from text using Deepgram TTS with retry logic"""
+    """Generate voice from text using Deepgram TTS with retry logic and chunking for long texts"""
     if not text.strip():
         return b""
 
     text = ensure_sentence_endings(text)
     
+    # For shorter texts, process directly
+    if len(text) <= MAX_CHUNK_SIZE:
+        return _generate_single_chunk(text, voice_id)
+    
+    # For longer texts, chunk and concatenate
+    print(f"[TTS] Text length ({len(text)} chars) exceeds {MAX_CHUNK_SIZE}, chunking...")
+    chunks = chunk_text_for_tts(text)
+    print(f"[TTS] Split into {len(chunks)} chunks")
+    
+    all_audio = b""
+    for i, chunk in enumerate(chunks, 1):
+        print(f"[TTS] Processing chunk {i}/{len(chunks)} ({len(chunk)} chars)...")
+        chunk_audio = _generate_single_chunk(chunk, voice_id)
+        all_audio += chunk_audio
+        print(f"[TTS] Chunk {i} complete: {len(chunk_audio)} bytes")
+    
+    print(f"[TTS] ✅ All chunks processed. Total audio: {len(all_audio)} bytes")
+    return all_audio
+
+
+def _generate_single_chunk(text: str, voice_id: str) -> bytes:
+    """Generate audio for a single text chunk with retries"""
     last_error = None
     
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             print(f"[TTS] Attempt {attempt}/{MAX_RETRIES}: Generating audio...")
             
-            # Use non-streaming request for reliability
             session = create_session_with_retries()
             resp = session.post(
                 DEEPGRAM_SPEAK_URL,
@@ -100,8 +143,8 @@ def generate_voice_from_text(text: str, voice_id: str = DEFAULT_VOICE_MODEL) -> 
                     "bit_rate": "32000",
                 },
                 json={"text": text},
-                stream=False,  # Don't stream - get full response
-                timeout=60,    # Longer timeout for TTS
+                stream=False,
+                timeout=90,
             )
 
             if not resp.ok:
@@ -123,6 +166,5 @@ def generate_voice_from_text(text: str, voice_id: str = DEFAULT_VOICE_MODEL) -> 
                 print(f"[TTS] Retrying in {RETRY_DELAY} seconds...")
                 time.sleep(RETRY_DELAY)
     
-    # All retries failed
     print(f"[TTS] ❌ All {MAX_RETRIES} attempts failed")
     raise last_error

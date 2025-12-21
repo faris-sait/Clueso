@@ -274,6 +274,83 @@ const getUserRecordingsWithUrls = async (userId) => {
   return recordingsWithUrls;
 };
 
+/**
+ * Create feedback for a recording
+ */
+const createFeedback = async (userId, recordingId, message) => {
+  const client = getSupabaseClient();
+  if (!client) {
+    Logger.warn('[Supabase] Client not initialized, skipping feedback save');
+    return null;
+  }
+
+  const { data, error } = await client
+    .from('feedback')
+    .insert({
+      user_id: userId,
+      recording_id: recordingId,
+      message: message,
+    })
+    .select(`
+      *,
+      users (first_name, last_name, email)
+    `)
+    .single();
+
+  if (error) {
+    Logger.error('[Supabase] Error creating feedback:', error.message);
+    return null;
+  }
+
+  Logger.info(`[Supabase] Feedback created: ${data.id}`);
+  return data;
+};
+
+/**
+ * Get feedback for a recording
+ */
+const getRecordingFeedback = async (recordingId) => {
+  const client = getSupabaseClient();
+  if (!client) return [];
+
+  const { data, error } = await client
+    .from('feedback')
+    .select(`
+      *,
+      users (first_name, last_name, email)
+    `)
+    .eq('recording_id', recordingId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    Logger.error('[Supabase] Error fetching feedback:', error.message);
+    return [];
+  }
+
+  return data || [];
+};
+
+/**
+ * Get recording by session ID
+ */
+const getRecordingBySessionId = async (sessionId) => {
+  const client = getSupabaseClient();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from('recordings')
+    .select('*')
+    .eq('session_id', sessionId)
+    .single();
+
+  if (error) {
+    Logger.error('[Supabase] Error fetching recording:', error.message);
+    return null;
+  }
+
+  return data;
+};
+
 module.exports = {
   getSupabaseClient,
   getUserByClerkId,
@@ -283,4 +360,7 @@ module.exports = {
   getUserRecordingsWithUrls,
   uploadToStorage,
   getSignedUrl,
+  createFeedback,
+  getRecordingFeedback,
+  getRecordingBySessionId,
 };
