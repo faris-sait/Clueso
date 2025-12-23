@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 */node_modules/
@@ -75,11 +76,19 @@ tmp/
 # Uploads and recordings (large files)
 uploads/
 recordings/
+=======
+node_modules
+.env
+.env.local
+
+# Large media files
+>>>>>>> 4365ddf100b6f351e8e342480825c6de48a74e08
 *.webm
 *.mp3
 *.mp4
 *.wav
 
+<<<<<<< HEAD
 # Database
 *.db
 *.sqlite
@@ -100,3 +109,21 @@ pnpm-lock.yaml
 # Misc
 .cache/
 .parcel-cache/
+=======
+# Recordings and uploads (large files)
+**/recordings/
+**/uploads/
+
+# Python virtual environments
+**/venv/
+**/__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+.next/
+build/
+
+# IDE
+.idea/
+>>>>>>> 4365ddf100b6f351e8e342480825c6de48a74e08
