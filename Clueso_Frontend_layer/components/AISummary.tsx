@@ -121,25 +121,25 @@ export default function AISummary({ sessionId, transcript }: AISummaryProps) {
   }
 
   return (
-    <div className="bg-[var(--color-bg-secondary)] rounded-lg border border-[var(--color-border-secondary)] overflow-hidden">
+    <div className="bg-[var(--color-bg-secondary)] rounded-lg border border-[var(--color-border-secondary)] overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[var(--color-border-secondary)] flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[var(--color-border-secondary)] flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          <h3 className="font-semibold text-[var(--color-text-primary)]">AI Summary</h3>
+          <h3 className="font-semibold text-base text-[var(--color-text-primary)]">Insights</h3>
         </div>
         
         {!insight && (
           <button
-            onClick={generateSummary}
+            onClick={() => generateSummary()}
             disabled={loading || !transcript}
             className={`
-              px-4 py-1.5 rounded-lg text-sm font-medium transition-all
+              px-4 py-2 rounded-lg text-sm font-medium transition-all
               ${loading || !transcript
                 ? 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-tertiary)] cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:from-purple-700 hover:to-purple-600'
+                : 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:from-indigo-700 hover:to-indigo-600'
               }
             `}
           >
@@ -152,14 +152,14 @@ export default function AISummary({ sessionId, transcript }: AISummaryProps) {
                 Generating...
               </span>
             ) : (
-              'Generate Summary'
+              'Generate Insights'
             )}
           </button>
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-4">
+      {/* Content - Scrollable */}
+      <div className="p-4 overflow-y-auto flex-1 min-h-0">
         {error && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
             {error}
@@ -173,34 +173,37 @@ export default function AISummary({ sessionId, transcript }: AISummaryProps) {
                 <h4 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2">
                   {section.title}
                 </h4>
-                <ul className="space-y-1.5">
+                <ul className="space-y-2">
                   {section.items.map((item, itemIdx) => (
                     <li key={itemIdx} className="flex items-start gap-2 text-sm text-[var(--color-text-primary)]">
-                      <span className="text-purple-400 mt-1">•</span>
-                      <span>{item}</span>
+                      <span className="text-indigo-400 mt-1">•</span>
+                      <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
             
-            <div className="pt-2 flex items-center justify-between text-xs text-[var(--color-text-muted)]">
+            <div className="pt-3 flex items-center justify-between text-xs text-[var(--color-text-muted)] border-t border-[var(--color-border-secondary)]">
               <span>Generated {new Date(insight.createdAt).toLocaleDateString()}</span>
               <button
                 onClick={() => generateSummary(true)}
                 disabled={loading || !transcript}
-                className="text-purple-400 hover:text-purple-300 transition-colors disabled:opacity-50"
+                className="text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-50 text-sm font-medium"
               >
                 {loading ? 'Regenerating...' : 'Regenerate'}
               </button>
             </div>
           </div>
         ) : (
-          <div className="text-center py-6">
-            <div className="text-4xl mb-2">✨</div>
+          <div className="text-center py-12">
+            <div className="text-5xl mb-3">✨</div>
+            <p className="text-base text-[var(--color-text-secondary)] mb-2 font-medium">
+              No insights generated yet
+            </p>
             <p className="text-sm text-[var(--color-text-tertiary)]">
               {transcript 
-                ? 'Click "Generate Summary" to create an AI-powered summary of this recording'
+                ? 'Click "Generate Insights" to create an AI-powered analysis'
                 : 'Transcript not available for this recording'
               }
             </p>

@@ -46,6 +46,12 @@ export interface AudioData {
     url: string;
     text: string;
     receivedAt: Date;
+    timeline?: Array<{
+        word: string;
+        start: number;
+        end: number;
+        confidence: number;
+    }>;
 }
 
 export interface ErrorEvent {

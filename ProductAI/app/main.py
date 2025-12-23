@@ -94,18 +94,30 @@ async def full_process(payload: AudioProcessRequest):
         print(f"\n[Python] ===== STEP 2: AUDIO GENERATION =====")
         print(f"[Python] Converting script to audio using Deepgram TTS...")
         print(f"[Python]   - Text length: {len(production_script)} characters")
-
-        audio_bytes = None
-        audio_generation_failed = False
         
-        try:
-            audio_bytes = generate_voice_from_text(production_script)
-            print(f"[Python] ✅ Audio generated successfully")
-            print(f"[Python]   - Audio size: {len(audio_bytes)} bytes ({len(audio_bytes) / 1024:.2f} KB)")
-        except Exception as e:
-            print(f"[Python] ❌ Audio generation failed: {str(e)}")
-            print(f"[Python] ⚠️ Continuing without generated audio - frontend will use original recording")
+        # Pre-flight check: Test Deepgram connectivity
+        print(f"[Python] Testing Deepgram API connectivity...")
+        from app.services.elevenlabs_service import test_deepgram_connectivity
+        
+        if not test_deepgram_connectivity():
+            print(f"[Python] ⚠️ Deepgram API connectivity test failed - skipping audio generation")
+            print(f"[Python] ⚠️ Frontend will use original recording audio")
+            audio_bytes = None
             audio_generation_failed = True
+        else:
+            print(f"[Python] ✅ Deepgram API is reachable")
+            
+            audio_bytes = None
+            audio_generation_failed = False
+            
+            try:
+                audio_bytes = generate_voice_from_text(production_script)
+                print(f"[Python] ✅ Audio generated successfully")
+                print(f"[Python]   - Audio size: {len(audio_bytes)} bytes ({len(audio_bytes) / 1024:.2f} KB)")
+            except Exception as e:
+                print(f"[Python] ❌ Audio generation failed: {str(e)}")
+                print(f"[Python] ⚠️ Continuing without generated audio - frontend will use original recording")
+                audio_generation_failed = True
 
 
         print(f"\n[Python] ===== STEP 3: SAVING AUDIO FILE =====")

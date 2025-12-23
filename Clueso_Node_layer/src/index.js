@@ -10,6 +10,7 @@ const authRoutes = require('./routes/v1/auth-routes'); // Add auth routes
 const userRoutes = require('./routes/v1/user-routes'); // Add user routes
 const feedbackRoutes = require('./routes/v1/feedback-routes'); // Add feedback routes
 const insightsRoutes = require('./routes/v1/insights-routes'); // Add insights routes
+const exportRoutes = require('./routes/v1/export-routes'); // Add export routes
 const { FrontendService } = require('./services');
 
 const app = express();
@@ -20,6 +21,12 @@ FrontendService.initialize(httpServer);
 
 // Enable CORS for all routes and origins (you can configure this further)
 app.use(cors());
+
+// Global request logger for debugging
+app.use((req, res, next) => {
+    Logger.info(`[REQUEST] ${req.method} ${req.originalUrl || req.url}`);
+    next();
+});
 
 const path = require('path');
 
@@ -58,6 +65,7 @@ app.use('/recordings', (req, res, next) => {
 // IMPORTANT: Recording routes MUST come BEFORE global body parsers
 // to prevent corruption of binary chunk data
 app.use('/api/recording', recordingRoutes);
+app.use('/api/v1/recording', recordingRoutes); // Also register at v1 path
 
 // Python AI processing routes
 app.use('/api/python', pythonRoutes);
@@ -77,6 +85,9 @@ app.use('/api/v1/feedback', feedbackRoutes);
 
 // Insights routes (need body parser)
 app.use('/api/v1/insights', insightsRoutes);
+
+// Export routes (need body parser)
+app.use('/api/v1/export', exportRoutes);
 
 // All other API routes
 app.use('/api', apiRoutes);

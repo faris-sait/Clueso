@@ -43,63 +43,87 @@ startBtn.onclick = async () => {
   try {
     // Request permissions HERE in popup (user gesture is still active)
     console.log("[popup] Requesting microphone permission...");
-    const micStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      },
-      video: false
-    });
+    
+    let micStream;
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
+        video: false
+      });
 
-    const audioTrack = micStream.getAudioTracks()[0];
-    console.log("[popup] ✓ Microphone permission granted:", audioTrack?.label);
+      const audioTrack = micStream.getAudioTracks()[0];
+      console.log("[popup] ✓ Microphone permission granted:", audioTrack?.label);
+    } catch (micErr) {
+      console.error("[popup] Microphone permission error:", micErr);
+      throw new Error(`Microphone: ${micErr.message}`);
+    }
 
-    // Request screen permission
+    // Request screen permission - CRITICAL: Must happen immediately after mic
     console.log("[popup] Requesting screen permission...");
-    const screenStream = await navigator.mediaDevices.getDisplayMedia({
-      video: {
-        displaySurface: 'monitor'
-      },
-      audio: false
-    });
+    if (statusEl) statusEl.textContent = "Select screen to share...";
+    
+    let screenStream;
+    try {
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          displaySurface: 'monitor'
+        },
+        audio: false,
+        preferCurrentTab: false
+      });
 
-    const videoTrack = screenStream.getVideoTracks()[0];
-    console.log("[popup] ✓ Screen permission granted");
+      const videoTrack = screenStream.getVideoTracks()[0];
+      const settings = videoTrack?.getSettings();
+      console.log("[popup] ✓ Screen permission granted:", settings?.displaySurface);
+    } catch (screenErr) {
+      console.error("[popup] Screen permission error:", screenErr);
+      
+      // Clean up mic stream
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+      }
+      
+      if (screenErr.name === 'NotAllowedError') {
+        throw new Error("Screen sharing was cancelled. Please try again and select a screen.");
+      } else if (screenErr.name === 'NotFoundError') {
+        throw new Error("No screen available to share.");
+      } else {
+        throw new Error(`Screen sharing failed: ${screenErr.message}`);
+      }
+    }
 
     // Permissions granted! Now send START_RECORDING with stream IDs
-    // Note: We can't pass MediaStream objects directly, so we'll just signal
-    // that permissions are OK and offscreen should start
     console.log("[popup] Sending START_RECORDING message");
     chrome.runtime.sendMessage({
       type: "START_RECORDING",
       permissionsGranted: true,
-      micLabel: audioTrack?.label,
-      screenLabel: videoTrack?.label
+      micLabel: micStream.getAudioTracks()[0]?.label,
+      screenLabel: screenStream.getVideoTracks()[0]?.label
     });
 
-    // Keep streams alive temporarily
+    // Keep streams alive longer to maintain permissions
     // Offscreen will request new streams using granted permissions
-    // ✅ SAFE FIX #5: Increased from 1s to 3s to give more time for offscreen
     setTimeout(() => {
       console.log("[popup] Closing temporary permission streams");
-      micStream.getTracks().forEach(t => t.stop());
-      screenStream.getTracks().forEach(t => t.stop());
-    }, 3000);
+      if (micStream) micStream.getTracks().forEach(t => t.stop());
+      if (screenStream) screenStream.getTracks().forEach(t => t.stop());
+    }, 10000);
 
     if (statusEl) statusEl.textContent = "Starting recording...";
   } catch (err) {
     console.error("[popup] Permission error:", err);
 
-    let errorMsg = "Permission denied";
-    if (err.name === 'NotAllowedError') {
-      errorMsg = "You dismissed the permission prompt. Please try again and click 'Allow'.";
-    } else if (err.name === 'NotFoundError') {
-      errorMsg = "No microphone or screen found.";
-    }
-
-    if (statusEl) statusEl.textContent = errorMsg;
-    alert(errorMsg);
+    let errorMsg = err.message || "Permission denied";
+    
+    if (statusEl) statusEl.textContent = `Error: ${errorMsg}`;
+    alert(`Recording failed:\n\n${errorMsg}\n\nPlease try again.`);
+    
+    // Reset UI
+    updateUI();
   }
 };
 
@@ -120,3 +144,21 @@ stopBtn.onclick = () => {
 // Initialize UI on popup open
 updateUI();
 console.log("[popup] Popup initialized");
+
+// Debug: Check if screen capture API is available
+if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+  console.log("[popup] ✓ Screen capture API available");
+} else {
+  console.error("[popup] ✗ Screen capture API NOT available");
+  if (statusEl) statusEl.textContent = "Screen capture not supported";
+}
+
+// Debug: Log available media devices
+navigator.mediaDevices.enumerateDevices()
+  .then(devices => {
+    console.log("[popup] Available devices:", devices.length);
+    devices.forEach(device => {
+      console.log(`  - ${device.kind}: ${device.label || 'unlabeled'}`);
+    });
+  })
+  .catch(err => console.error("[popup] Error enumerating devices:", err));

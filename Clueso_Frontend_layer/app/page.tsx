@@ -60,9 +60,10 @@ function HomeContent() {
     );
   }
 
-  // Show dashboard when signed in
+  // Redirect to dashboard when signed in
   if (isLoaded && isSignedIn) {
-    return <Dashboard />;
+    router.push('/dashboard');
+    return <LoadingFallback />;
   }
 
   // Loading state
