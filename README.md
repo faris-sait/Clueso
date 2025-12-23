@@ -9,7 +9,7 @@ Clueso is a comprehensive platform that captures user interactions, generates AI
 ## 📚 Documentation
 
 > **For detailed documentation, please refer to:**
-> - **User Documentation**: `documentations/CLUESOUSERDOCUMENTATION.pdf` - Complete user guide and feature walkthrough
+> - **User Documentation**: `documentations/CLUESOUSERDOCUMENTATIONf.pdf` - Complete user guide and feature walkthrough
 > - **Technical Documentation**: Additional technical guides available in the `documentations/` folder
 
 ---
@@ -71,12 +71,14 @@ Clueso is a comprehensive platform that captures user interactions, generates AI
 - **Timeout Management**: Fast failure detection
 
 ### 8. Recording Insights & Analytics
-- **AI Summaries**: Automatic generation of recording insights
+- **AI Summaries**: Automatic generation of recording insights using NVIDIA Qwen AI
+- **NVIDIA NIM Integration**: Powered by Qwen3-Next-80B model via NVIDIA API
 - **Timeline Analysis**: Breakdown of user actions and timing
 - **UI Element Extraction**: Identifies buttons, inputs, and interactions
 - **Speaking Rate Analysis**: Words per second metrics
 - **Confidence Tracking**: Low-confidence word detection
 - **Session Metadata**: URL, viewport, duration tracking
+- **Intelligent Analysis**: Concise summaries with key observations
 
 ### 9. Feedback Collection System
 - **User Feedback**: Collect comments on recordings
@@ -254,7 +256,8 @@ clueso/
 - Clerk account (authentication)
 - Supabase account (database)
 - Deepgram API key (transcription/TTS)
-- Google Gemini API key (AI generation)
+- Google Gemini API key (AI script generation)
+- NVIDIA API key (AI insights generation)
 
 ### Installation
 
@@ -279,6 +282,7 @@ SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_KEY=your_supabase_service_key
 CLERK_SECRET_KEY=your_clerk_secret_key
 PYTHON_SERVICE_URL=http://localhost:8000
+NVIDIA_API_KEY=your_nvidia_api_key
 EOF
 
 # Start server
@@ -406,6 +410,7 @@ SUPABASE_URL=your_url
 SUPABASE_SERVICE_KEY=your_key
 CLERK_SECRET_KEY=your_key
 PYTHON_SERVICE_URL=http://localhost:8000
+NVIDIA_API_KEY=your_key
 ```
 
 #### Python Service (.env)
@@ -471,7 +476,9 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 
 ### AI Service
 - **Framework**: FastAPI
-- **AI Model**: Google Gemini 2.5 Flash
+- **AI Models**: 
+  - Google Gemini 2.5 Flash (Script Generation)
+  - NVIDIA Qwen3-Next-80B (Insights Generation)
 - **TTS**: Deepgram Aura 2
 - **STT**: Deepgram Nova 2
 - **HTTP Client**: Requests with retry logic
@@ -502,6 +509,10 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 #### Feedback Routes
 - `POST /api/v1/feedback` - Submit feedback
 - `GET /api/v1/feedback/:recordingId` - Get feedback for recording
+
+#### Insights Routes
+- `POST /api/v1/insights/:sessionId` - Generate AI insights for recording
+- `GET /api/v1/insights/:sessionId` - Get existing insights
 
 #### User Routes
 - `GET /api/v1/user/profile` - Get user profile
@@ -580,19 +591,22 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 
 ## 📝 Documentation
 
-- `CLUESOUSERDOCUMENTATION.pdf` - End to End User Documentation
-- `CLUESOTECHNICALDOCUMENTATION.pdf` - End to End Technical Documentation
+- `CLUESOUSERDOCUMENTATION` - End to End User Documentation
+- `SUPABASE_SETUP_GUIDE.md` - End to End Technical Documentation
 
 ---
-
-
 ## 🙏 Acknowledgments
 
 - **Clerk** - Authentication platform
 - **Supabase** - Database and backend services
 - **Deepgram** - Speech-to-text and text-to-speech
-- **Google Gemini** - AI Transcript generation
-- **Nvidia Qwen** - AI Insights(text) generation
+- **Google Gemini** - AI script generation
+- **NVIDIA NIM** - AI insights generation (Qwen3-Next-80B model)
+
+
 ---
+
+
+
 
 
