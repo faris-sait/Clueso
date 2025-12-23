@@ -6,6 +6,14 @@ Clueso is a comprehensive platform that captures user interactions, generates AI
 
 ---
 
+## 📚 Documentation
+
+> **For detailed documentation, please refer to:**
+> - **User Documentation**: `documentations/CLUESOUSERDOCUMENTATIONf.pdf` - Complete user guide and feature walkthrough
+> - **Technical Documentation**: Additional technical guides available in the `documentations/` folder
+
+---
+
 ## 🎯 Core Features
 
 ### 1. User Onboarding & Authentication
