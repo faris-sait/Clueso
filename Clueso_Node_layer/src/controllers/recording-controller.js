@@ -217,6 +217,27 @@ exports.processRecording = async (req, res) => {
         actualSessionId,
         metadata
       );
+      
+      // Update recording metadata with timeline data for transcript sync
+      if (transcriptionResult && transcriptionResult.deepgramResponse && transcriptionResult.deepgramResponse.timeline) {
+        try {
+          const supabaseService = require("../services/supabase-service");
+          const recording = await supabaseService.getRecordingBySessionId(actualSessionId);
+          
+          if (recording) {
+            await supabaseService.updateRecordingStatus(actualSessionId, recording.status, {
+              metadata: {
+                ...recording.metadata,
+                timeline: transcriptionResult.deepgramResponse.timeline,
+                transcript: transcriptionResult.text
+              }
+            });
+            Logger.info(`[Recording Controller] Updated recording metadata with timeline data (${transcriptionResult.deepgramResponse.timeline.length} words)`);
+          }
+        } catch (metadataError) {
+          Logger.error(`[Recording Controller] Error updating recording metadata with timeline:`, metadataError);
+        }
+      }
     } else {
       // Use real-time transcription result
       transcriptionResult = {

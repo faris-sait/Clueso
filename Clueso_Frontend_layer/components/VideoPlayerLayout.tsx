@@ -34,6 +34,7 @@ export default function VideoPlayerLayout({
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showInsights, setShowInsights] = useState(false);
 
     // Trim 1 second from start and end
     const TRIM_START = 1;
@@ -226,8 +227,17 @@ export default function VideoPlayerLayout({
                     </div>
                 </div>
 
-                {/* Export Button + Feedback Button */}
+                {/* Export Button + AI Insights Button + Feedback Button */}
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowInsights(true)}
+                        className="relative px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:from-indigo-700 hover:to-indigo-600"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span>AI Insights</span>
+                    </button>
                     <button
                         onClick={() => setShowFeedback(!showFeedback)}
                         className={`
@@ -377,23 +387,52 @@ export default function VideoPlayerLayout({
                             <RecordingFeedback sessionId={sessionId} />
                         </div>
                     ) : (
-                        <div className="flex-1 flex flex-col overflow-hidden">
-                            <TranscriptPanel
-                                audioData={audioData}
-                                currentTime={currentTime}
-                                onSeek={handleSeek}
-                            />
-                            {/* AI Summary Section */}
-                            <div className="shrink-0 p-4 border-t border-[var(--color-border-primary)]">
-                                <AISummary 
-                                    sessionId={sessionId} 
-                                    transcript={audioData?.text}
-                                />
-                            </div>
-                        </div>
+                        <TranscriptPanel
+                            audioData={audioData}
+                            currentTime={currentTime}
+                            onSeek={handleSeek}
+                        />
                     )}
                 </div>
             </div>
+
+            {/* AI Insights Modal */}
+            {showInsights && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-[var(--color-bg-secondary)] rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border border-[var(--color-border-primary)]">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b border-[var(--color-border-primary)] flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-[var(--color-text-primary)]">AI Insights</h2>
+                                    <p className="text-sm text-[var(--color-text-tertiary)]">AI-powered analysis of your recording</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowInsights(false)}
+                                className="p-2 rounded-lg hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <AISummary 
+                                sessionId={sessionId} 
+                                transcript={audioData?.text}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

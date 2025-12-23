@@ -105,6 +105,7 @@ exports.processWithAI = async (text, events = [], metadata = {}, deepgramRespons
                         url: processedAudioUrl,  // Supabase signed URL (may be null)
                         path: processedAudioUrl ? null : `/recordings/${pythonResponse.processed_audio_filename}`,
                         text: pythonResponse.script || text, // Use generated script if available
+                        timeline: deepgramResponse?.timeline || null, // Include word-level timestamps
                         timestamp: new Date().toISOString()
                     });
                 } else {
@@ -117,6 +118,7 @@ exports.processWithAI = async (text, events = [], metadata = {}, deepgramRespons
                             url: audioSignedUrl,
                             path: null,
                             text: pythonResponse.script || text,
+                            timeline: deepgramResponse?.timeline || null, // Include word-level timestamps
                             timestamp: new Date().toISOString()
                         });
                     } else if (audioPath && fs.existsSync(audioPath)) {

@@ -20,25 +20,60 @@ export default function TranscriptPanel({ audioData, currentTime, onSeek }: Tran
     const [searchQuery, setSearchQuery] = useState('');
     const [segments, setSegments] = useState<TranscriptSegment[]>([]);
 
-    // Parse transcript into segments (simplified - in production, use actual word-level timestamps)
+    // Parse transcript into segments using timeline data if available
     useEffect(() => {
         if (!audioData?.text) {
             setSegments([]);
             return;
         }
 
-        // Split transcript into sentences for demonstration
-        const sentences = audioData.text.match(/[^.!?]+[.!?]+/g) || [audioData.text];
-        const duration = 60; // Placeholder duration
-        const segmentDuration = duration / sentences.length;
+        // If we have timeline data with word-level timestamps, use it
+        if (audioData.timeline && audioData.timeline.length > 0) {
+            // Group words into sentences based on punctuation
+            const parsedSegments: TranscriptSegment[] = [];
+            let currentSegment: { words: string[]; startTime: number; endTime: number } = {
+                words: [],
+                startTime: 0,
+                endTime: 0
+            };
 
-        const parsedSegments: TranscriptSegment[] = sentences.map((sentence, idx) => ({
-            text: sentence.trim(),
-            startTime: idx * segmentDuration,
-            endTime: (idx + 1) * segmentDuration,
-        }));
+            audioData.timeline.forEach((wordData, idx) => {
+                if (currentSegment.words.length === 0) {
+                    currentSegment.startTime = wordData.start;
+                }
 
-        setSegments(parsedSegments);
+                currentSegment.words.push(wordData.word);
+                currentSegment.endTime = wordData.end;
+
+                // Check if this word ends a sentence (has punctuation)
+                const endsWithPunctuation = /[.!?]$/.test(wordData.word);
+                const isLastWord = idx === audioData.timeline!.length - 1;
+
+                if (endsWithPunctuation || isLastWord) {
+                    parsedSegments.push({
+                        text: currentSegment.words.join(' '),
+                        startTime: currentSegment.startTime,
+                        endTime: currentSegment.endTime
+                    });
+                    currentSegment = { words: [], startTime: 0, endTime: 0 };
+                }
+            });
+
+            setSegments(parsedSegments);
+        } else {
+            // Fallback: Split transcript into sentences with estimated timestamps
+            const sentences = audioData.text.match(/[^.!?]+[.!?]+/g) || [audioData.text];
+            const duration = 60; // Placeholder duration
+            const segmentDuration = duration / sentences.length;
+
+            const parsedSegments: TranscriptSegment[] = sentences.map((sentence, idx) => ({
+                text: sentence.trim(),
+                startTime: idx * segmentDuration,
+                endTime: (idx + 1) * segmentDuration,
+            }));
+
+            setSegments(parsedSegments);
+        }
     }, [audioData]);
 
     // Auto-scroll to current segment
@@ -67,9 +102,9 @@ export default function TranscriptPanel({ audioData, currentTime, onSeek }: Tran
     };
 
     return (
-        <div className="h-full flex flex-col bg-[var(--color-bg-secondary)] border-l border-[var(--color-border-primary)]">
+        <div className="flex-1 flex flex-col overflow-hidden bg-[var(--color-bg-secondary)] border-l border-[var(--color-border-primary)]">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-[var(--color-border-primary)]">
+            <div className="px-6 py-4 border-b border-[var(--color-border-primary)] shrink-0">
                 <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -100,7 +135,7 @@ export default function TranscriptPanel({ audioData, currentTime, onSeek }: Tran
             {/* Transcript Content */}
             <div
                 ref={containerRef}
-                className="flex-1 overflow-y-auto px-6 py-4 space-y-4"
+                className="flex-1 overflow-y-auto px-6 py-4 space-y-4 min-h-0"
             >
                 {!audioData?.text ? (
                     <div className="flex flex-col items-center justify-center h-full text-center">
@@ -181,7 +216,7 @@ export default function TranscriptPanel({ audioData, currentTime, onSeek }: Tran
 
             {/* Footer Stats */}
             {audioData?.text && (
-                <div className="px-6 py-3 border-t border-[var(--color-border-primary)] bg-[var(--color-bg-tertiary)]">
+                <div className="px-6 py-3 border-t border-[var(--color-border-primary)] bg-[var(--color-bg-tertiary)] shrink-0">
                     <div className="flex items-center justify-between text-xs text-[var(--color-text-tertiary)]">
                         <span>{segments.length} segments</span>
                         <span>{audioData.text.split(' ').length} words</span>

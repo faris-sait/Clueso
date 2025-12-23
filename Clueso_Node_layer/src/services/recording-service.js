@@ -298,6 +298,7 @@ exports.processRecording = async ({ events, metadata, videoPath, audioPath }) =>
               startTime: metadata.startTime,
               endTime: metadata.endTime,
               viewport: metadata.viewport,
+              timeline: metadata.timeline || null, // Store Deepgram timeline for transcript sync
             },
           });
           Logger.info(`[SERVICE] Recording saved to Supabase for user: ${userId}`);
