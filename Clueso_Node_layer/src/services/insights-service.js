@@ -21,7 +21,7 @@ const getNvidiaApiKey = () => {
 /**
  * Generate AI summary from transcript text
  * @param {string} transcript - The recording transcript
- * @returns {Promise<Object>} Structured insights object
+ * @returns {Promise<string>} Summary text
  */
 const generateSummary = async (transcript) => {
   if (!transcript || transcript.trim().length < 10) {
@@ -39,21 +39,25 @@ const generateSummary = async (transcript) => {
   Logger.info('[Insights] Using NVIDIA AI for summary generation');
 
   try {
-    const prompt = `Analyze this recording transcript and provide structured insights in JSON format.
+    const prompt = `Analyze this recording transcript and provide:
+
+1. A concise summary (3-5 bullet points) of the main content
+2. Key observations about the recording (clarity, structure, notable moments)
 
 Transcript:
 """
 ${transcript.substring(0, 4000)}
 """
 
-Respond with ONLY a valid JSON object (no markdown, no code blocks) with this exact structure:
-{
-  "summary": "A brief 2-3 sentence overview of the recording",
-  "key_points": ["point 1", "point 2", "point 3"],
-  "action_items": ["action 1", "action 2"],
-  "sentiment": "positive|neutral|negative",
-  "topics": ["topic1", "topic2", "topic3"]
-}`;
+Format your response as:
+## Summary
+- [bullet point 1]
+- [bullet point 2]
+- [bullet point 3]
+
+## Key Observations
+- [observation 1]
+- [observation 2]`;
 
     const response = await fetch(NVIDIA_API_URL, {
       method: 'POST',
@@ -87,28 +91,14 @@ Respond with ONLY a valid JSON object (no markdown, no code blocks) with this ex
     }
 
     const data = await response.json();
-    const aiResponse = data.choices?.[0]?.message?.content;
+    const summaryText = data.choices?.[0]?.message?.content;
 
-    if (!aiResponse) {
+    if (!summaryText) {
       throw new Error('No summary generated from AI');
     }
 
-    // Parse the JSON response from AI
-    try {
-      const structuredInsights = JSON.parse(aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim());
-      Logger.info('[Insights] Structured insights generated successfully');
-      return structuredInsights;
-    } catch (parseError) {
-      Logger.warn('[Insights] Failed to parse AI response as JSON, using as plain text');
-      // Fallback to plain text if parsing fails
-      return {
-        summary: aiResponse,
-        key_points: [],
-        action_items: [],
-        sentiment: 'neutral',
-        topics: []
-      };
-    }
+    Logger.info('[Insights] Summary generated successfully');
+    return summaryText;
   } catch (err) {
     Logger.error(`[Insights] AI generation failed: ${err.message}`);
     throw err;
@@ -122,20 +112,16 @@ const generateMockSummary = (transcript) => {
   const wordCount = transcript.split(/\s+/).length;
   const sentences = transcript.split(/[.!?]+/).filter((s) => s.trim().length > 0);
 
-  return {
-    summary: `Recording contains approximately ${wordCount} words across ${sentences.length} sentences. The speaker discusses the main topic with clear articulation. Key points are presented in a logical sequence.`,
-    key_points: [
-      'Audio quality appears suitable for transcription',
-      'Speech patterns are consistent throughout',
-      'Recording covers the intended subject matter'
-    ],
-    action_items: [
-      'Review transcript for accuracy',
-      'Consider adding visual cues for complex explanations'
-    ],
-    sentiment: 'neutral',
-    topics: ['recording', 'transcription', 'analysis']
-  };
+  return `## Summary
+- Recording contains approximately ${wordCount} words across ${sentences.length} sentences
+- The speaker discusses the main topic with clear articulation
+- Key points are presented in a logical sequence
+- The recording covers the intended subject matter
+
+## Key Observations
+- Audio quality appears suitable for transcription
+- Speech patterns are consistent throughout
+- Consider adding visual cues for complex explanations`;
 };
 
 /**
@@ -161,34 +147,25 @@ const getInsight = async (sessionId) => {
 };
 
 /**
- * Save insight to database with structured data
- * @param {string} sessionId - Recording session ID
- * @param {string} recordingId - Recording UUID
- * @param {Object} insights - Structured insights object
+ * Save insight to database
  */
-const saveInsight = async (sessionId, recordingId, insights) => {
+const saveInsight = async (sessionId, summaryText) => {
   const client = getSupabaseClient();
   if (!client) {
     Logger.warn('[Insights] Supabase not configured, cannot save insight');
     return null;
   }
 
-  // Support both structured and legacy plain text format
-  const insightData = {
-    session_id: sessionId,
-    recording_id: recordingId,
-    summary: insights.summary || insights,
-    key_points: insights.key_points || [],
-    action_items: insights.action_items || [],
-    sentiment: insights.sentiment || 'neutral',
-    topics: insights.topics || [],
-    summary_text: typeof insights === 'string' ? insights : insights.summary, // Legacy field
-    created_at: new Date().toISOString(),
-  };
-
   const { data, error } = await client
     .from('recording_insights')
-    .upsert(insightData, { onConflict: 'session_id' })
+    .upsert(
+      {
+        session_id: sessionId,
+        summary_text: summaryText,
+        created_at: new Date().toISOString(),
+      },
+      { onConflict: 'session_id' }
+    )
     .select()
     .single();
 
@@ -197,7 +174,7 @@ const saveInsight = async (sessionId, recordingId, insights) => {
     throw error;
   }
 
-  Logger.info(`[Insights] Structured insight saved for session: ${sessionId}`);
+  Logger.info(`[Insights] Insight saved for session: ${sessionId}`);
   return data;
 };
 
