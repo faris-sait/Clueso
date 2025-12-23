@@ -330,3 +330,70 @@ exports.processRecording = async (req, res) => {
     });
   }
 };
+
+/**
+ * Update recording title
+ */
+exports.updateRecordingTitle = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { title } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    if (!title || title.trim().length === 0) {
+      return res.status(400).json({ error: "title is required" });
+    }
+
+    Logger.info(`[CONTROLLER] Updating title for session: ${sessionId}`);
+
+    const supabaseService = require("../services/supabase-service");
+    const updatedRecording = await supabaseService.updateRecordingTitle(sessionId, title.trim());
+
+    if (!updatedRecording) {
+      return res.status(404).json({ error: "Recording not found" });
+    }
+
+    Logger.info(`[CONTROLLER] Title updated successfully for session: ${sessionId}`);
+    return res.status(200).json({
+      success: true,
+      recording: updatedRecording
+    });
+  } catch (err) {
+    Logger.error(`[CONTROLLER] Update title error:`, err);
+    res.status(500).json({ error: "Failed to update recording title" });
+  }
+};
+
+/**
+ * Delete recording
+ */
+exports.deleteRecording = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    Logger.info(`[CONTROLLER] Deleting recording for session: ${sessionId}`);
+
+    const supabaseService = require("../services/supabase-service");
+    const success = await supabaseService.deleteRecording(sessionId);
+
+    if (!success) {
+      return res.status(404).json({ error: "Recording not found or deletion failed" });
+    }
+
+    Logger.info(`[CONTROLLER] Recording deleted successfully: ${sessionId}`);
+    return res.status(200).json({
+      success: true,
+      message: "Recording deleted successfully"
+    });
+  } catch (err) {
+    Logger.error(`[CONTROLLER] Delete recording error:`, err);
+    res.status(500).json({ error: "Failed to delete recording" });
+  }
+};

@@ -15,8 +15,22 @@ const requestLogger = (req, res, next) => {
   req.requestId = requestId;
   console.log(`[ROUTE] ${new Date().toISOString()} - ${req.method} ${req.path}`);
   console.log(`[ROUTE] Request ID: ${requestId}`);
+  console.log(`[ROUTE] Full URL: ${req.originalUrl}`);
   next();
 };
+
+// Update recording title - needs JSON parser
+router.patch("/:sessionId/title",
+  requestLogger,
+  express.json(),
+  recordingController.updateRecordingTitle
+);
+
+// Delete recording - no body needed
+router.delete("/:sessionId",
+  requestLogger,
+  recordingController.deleteRecording
+);
 
 // CHANGED: Use multer instead of raw parser
 router.post("/video-chunk",

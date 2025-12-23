@@ -351,6 +351,97 @@ const getRecordingBySessionId = async (sessionId) => {
   return data;
 };
 
+/**
+ * Update recording title
+ */
+const updateRecordingTitle = async (sessionId, title) => {
+  const client = getSupabaseClient();
+  if (!client) return null;
+
+  const { data, error } = await client
+    .from('recordings')
+    .update({ title })
+    .eq('session_id', sessionId)
+    .select()
+    .single();
+
+  if (error) {
+    Logger.error('[Supabase] Error updating recording title:', error.message);
+    return null;
+  }
+
+  Logger.info(`[Supabase] Recording title updated: ${sessionId}`);
+  return data;
+};
+
+/**
+ * Delete recording and associated files from storage
+ */
+const deleteRecording = async (sessionId) => {
+  const client = getSupabaseClient();
+  if (!client) {
+    Logger.error('[Supabase] Client not initialized for deletion');
+    return false;
+  }
+
+  try {
+    Logger.info(`[Supabase] Attempting to delete recording: ${sessionId}`);
+    
+    // First get the recording to find storage paths
+    const recording = await getRecordingBySessionId(sessionId);
+    if (!recording) {
+      Logger.error(`[Supabase] Recording not found for deletion: ${sessionId}`);
+      
+      // List all recordings to help debug
+      const { data: allRecordings } = await client
+        .from('recordings')
+        .select('session_id')
+        .limit(10);
+      Logger.info(`[Supabase] Available session IDs: ${allRecordings?.map(r => r.session_id).join(', ') || 'none'}`);
+      
+      return false;
+    }
+
+    Logger.info(`[Supabase] Found recording to delete: ${recording.id}`);
+
+    // Delete files from storage
+    const filesToDelete = [];
+    if (recording.video_path) filesToDelete.push(recording.video_path);
+    if (recording.audio_path) filesToDelete.push(recording.audio_path);
+
+    if (filesToDelete.length > 0) {
+      Logger.info(`[Supabase] Deleting ${filesToDelete.length} files from storage: ${filesToDelete.join(', ')}`);
+      const { error: storageError } = await client.storage
+        .from(STORAGE_BUCKET)
+        .remove(filesToDelete);
+
+      if (storageError) {
+        Logger.warn(`[Supabase] Error deleting storage files: ${storageError.message}`);
+        // Continue with database deletion even if storage deletion fails
+      } else {
+        Logger.info(`[Supabase] Deleted ${filesToDelete.length} files from storage`);
+      }
+    }
+
+    // Delete recording from database (cascade will delete feedback)
+    const { error } = await client
+      .from('recordings')
+      .delete()
+      .eq('session_id', sessionId);
+
+    if (error) {
+      Logger.error(`[Supabase] Error deleting recording from database: ${error.message}`);
+      return false;
+    }
+
+    Logger.info(`[Supabase] Recording deleted successfully: ${sessionId}`);
+    return true;
+  } catch (err) {
+    Logger.error(`[Supabase] Delete recording exception: ${err.message}`);
+    return false;
+  }
+};
+
 module.exports = {
   getSupabaseClient,
   getUserByClerkId,
@@ -363,4 +454,6 @@ module.exports = {
   createFeedback,
   getRecordingFeedback,
   getRecordingBySessionId,
+  updateRecordingTitle,
+  deleteRecording,
 };
