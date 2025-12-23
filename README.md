@@ -592,7 +592,7 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 ## 📝 Documentation
 
 - `CLUESOUSERDOCUMENTATION` - End to End User Documentation
-- `SUPABASE_SETUP_GUIDE.md` - End to End Technical Documentation
+- `CLUESOTECHNICALDOCUMENTATION` - End to End Technical Documentation
 
 ---
 ## 🙏 Acknowledgments
