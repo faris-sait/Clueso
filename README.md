@@ -580,11 +580,8 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 
 ## 📝 Documentation
 
-- `CLERK_SETUP_GUIDE.md` - Clerk authentication setup
-- `SUPABASE_SETUP_GUIDE.md` - Database configuration
-- `Clueso_Node_layer/DEMO_ENDPOINT_GUIDE.md` - Testing guide
-- `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` - Frontend testing
-- `ProductAI/TTS_RELIABILITY_FIX.md` - TTS troubleshooting
+- `CLUESOUSERDOCUMENTATION.pdf` - End to End User Documentation
+- `CLUESOTECHNICALDOCUMENTATION.pdf` - End to End Technical Documentation
 
 ---
 
