@@ -37,13 +37,7 @@ router.get('/:sessionId', optionalAuth, async (req, res) => {
       insight: {
         id: insight.id,
         sessionId: insight.session_id,
-        recordingId: insight.recording_id,
-        summary: insight.summary,
-        keyPoints: insight.key_points || [],
-        actionItems: insight.action_items || [],
-        sentiment: insight.sentiment || 'neutral',
-        topics: insight.topics || [],
-        summaryText: insight.summary_text, // Legacy field
+        summaryText: insight.summary_text,
         createdAt: insight.created_at,
       }
     });
