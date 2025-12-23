@@ -585,47 +585,14 @@ See `Clueso_Node_layer/FRONTEND_TESTING_GUIDE.md` for detailed testing instructi
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Write/update tests
-5. Submit a pull request
-
----
-
-## 📄 License
-
-[Add your license here]
-
----
-
-## 👥 Team
-
-[Add team information here]
-
----
 
 ## 🙏 Acknowledgments
 
 - **Clerk** - Authentication platform
 - **Supabase** - Database and backend services
 - **Deepgram** - Speech-to-text and text-to-speech
-- **Google Gemini** - AI text generation
-- **Vercel** - Frontend hosting
-
+- **Google Gemini** - AI Transcript generation
+- **Nvidia Qwen** - AI Insights(text) generation
 ---
 
-## 📞 Support
 
-For issues and questions:
-- GitHub Issues: [repository-url]/issues
-- Email: [support-email]
-- Documentation: [docs-url]
-
----
-
-**Built with ❤️ by the Clueso Team**
